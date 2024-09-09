@@ -1,101 +1,247 @@
-import Image from "next/image";
+'use client'
+import { FaRegTrashCan } from "react-icons/fa6";
+import { GoPencil } from "react-icons/go";
+import { FaRegEye } from "react-icons/fa";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableFooter,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "@/components/ui/button"
+import { useState, useEffect } from "react";
+import axios from "axios";
+import Modal from "@/myComps/Modal.js"
+import { Label } from "@/components/ui/label"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const url = "http://localhost/contact/manage.php"
+  const [contactTbl, setContactTbl] = useState([])
+  const [userDetails, setUserDetails] = useState([]);
+  const [openView, setOpenView] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
+  
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // For View Only
+  const viewDetails = async (contactID) => {
+    setOpenView(true);
+    const fetchForm = new FormData();
+    fetchForm.append("request", "view-details")
+    fetchForm.append("id-request", contactID)
+
+    try {
+      const conn = await axios.post(url, fetchForm)
+      if (conn.data.response) {
+        console.log("Successfully Fetched User Details", conn.data.report)
+        setUserDetails(conn.data.report)
+      } else {
+        console.log("Unsuccessful fetch result")
+      }
+    } catch (err) {
+      console.error("Failed to Connect to Database", err);
+    }
+  };
+
+  // For Update Only
+  const updDetails = async (contactID) => {
+    setOpenUpdate(true);
+    const fetchForm = new FormData();
+    fetchForm.append("request", "view-details")
+    fetchForm.append("id-request", contactID)
+
+    try {
+      const conn = await axios.post(url, fetchForm)
+      if (conn.data.response) {
+        console.log("Successfully Fetched User Details", conn.data.report)
+        setUserDetails(conn.data.report)
+      } else {
+        console.log("Unsuccessful fetch result")
+      }
+    } catch (err) {
+      console.error("Failed to Connect to Database", err);
+    }
+  };
+
+  // For Delete Only
+  const delDetails = async (contactID) => {
+    setOpenDelete(true);
+    const fetchForm = new FormData();
+    fetchForm.append("request", "view-details")
+    fetchForm.append("id-request", contactID)
+
+    try {
+      const conn = await axios.post(url, fetchForm)
+      if (conn.data.response) {
+        console.log("Successfully Fetched User Details", conn.data.report)
+        setUserDetails(conn.data.report)
+      } else {
+        console.log("Unsuccessful fetch result")
+      }
+    } catch (err) {
+      console.error("Failed to Connect to Database", err);
+    }
+  };
+
+  const closeView = () => setOpenView(false);
+  const closeUpdate = () => setOpenUpdate(false);
+  const closeDelete = () => setOpenDelete(false);
+
+
+
+  useEffect(() => {
+    axios.get(url).then((res) => {
+
+      if (res.data.response) {
+        console.log("Successfully Connected to Database!")
+        setContactTbl(res.data.report)
+      } else {
+        console.log("Cant fetch data", res.data.report)
+      }
+
+    }).catch((err) => {
+      console.error("Unsuccessful Connection", err)
+    })
+  }, [])
+
+  return (
+    <>
+      <div className="m-4 p-6">
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Contact Table</CardTitle>
+            <CardDescription>Table for Contacts</CardDescription>
+          </CardHeader>
+          <CardContent>
+
+            <ScrollArea className="h-[400px]">
+              <Table>
+                <TableCaption>A list of your recent invoices.</TableCaption>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Phone</TableHead>
+                    <TableHead>Action</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {contactTbl.map((contact) => (
+                    <TableRow key={contact.contact_id}>
+                      <TableCell>{contact.contact_name}</TableCell>
+                      <TableCell>{contact.contact_phone}</TableCell>
+                      <TableCell>
+
+                        <div className="mx-3 flex space-x-1">
+                          <Button onClick={() => viewDetails(contact.contact_id)}><FaRegEye /></Button>
+                          <Button variant="secondary" onClick={() => updDetails(contact.contact_id)}><GoPencil /></Button>
+                          <Button variant="destructive" onClick={() => delDetails(contact.contact_id)}><FaRegTrashCan /></Button>
+                        </div>
+
+                      </TableCell>
+
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </ScrollArea>
+
+          </CardContent>
+          <CardFooter>
+            <Button>Add New Contact</Button>
+          </CardFooter>
+        </Card>
+      </div>
+
+      {/* View Details */}
+      <Modal isOpen={openView} onClose={closeView}>
+        <h2 className="text-xl font-bold text-black">View</h2>
+        <div className="mt-2 flex flex-col space-y-2 text-black">
+          {
+            userDetails.map((details, index) => {
+              return (
+                <>
+                  <ul key={index} className="space-y-1">
+                    <li><Label htmlFor="name">Name: {details.contact_name}</Label></li>
+                    <li><Label htmlFor="phone">Phone: {details.contact_phone}</Label></li>
+                    <li><Label htmlFor="email">Email: {details.contact_email}</Label></li>
+                    <li><Label htmlFor="address">Address: {details.contact_address}</Label></li>
+                    <li><Label htmlFor="group">Group: {details.grp_name}</Label></li>
+                    <li><Label htmlFor="owner">Owner: {details.usr_fullname}</Label></li>
+                  </ul>
+                </>
+
+              )
+            })
+          }
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </Modal>
+
+      {/* Update Details */}
+      <Modal isOpen={openUpdate} onClose={closeUpdate}>
+        <h2 className="text-xl font-bold text-black">Update</h2>
+        <div className="mt-2 flex flex-col space-y-2 text-black">
+          {
+            userDetails.map((details, index) => {
+              return (
+                <>
+                  <ul key={index} className="space-y-1">
+                    <li><Label htmlFor="name">Name: {details.contact_name}</Label></li>
+                    <li><Label htmlFor="phone">Phone: {details.contact_phone}</Label></li>
+                    <li><Label htmlFor="email">Email: {details.contact_email}</Label></li>
+                    <li><Label htmlFor="address">Address: {details.contact_address}</Label></li>
+                    <li><Label htmlFor="group">Group: {details.grp_name}</Label></li>
+                    <li><Label htmlFor="owner">Owner: {details.usr_fullname}</Label></li>
+                  </ul>
+
+                    <Button className="flex justify-center">Confirm Update</Button>
+                </>
+
+              )
+            })
+          }
+        </div>
+      </Modal>
+
+      {/* Delete Details */}
+      <Modal isOpen={openDelete} onClose={closeDelete}>
+        <h2 className="text-xl font-bold text-black">Delete</h2>
+        <div className="mt-2 flex flex-col space-y-2 text-black">
+          {
+            userDetails.map((details, index) => {
+              return (
+                <>
+                  <ul key={index} className="space-y-1">
+                    <li><Label htmlFor="name">Name: {details.contact_name}</Label></li>
+                    <li><Label htmlFor="phone">Phone: {details.contact_phone}</Label></li>
+                    <li><Label htmlFor="email">Email: {details.contact_email}</Label></li>
+                    <li><Label htmlFor="address">Address: {details.contact_address}</Label></li>
+                    <li><Label htmlFor="group">Group: {details.grp_name}</Label></li>
+                    <li><Label htmlFor="owner">Owner: {details.usr_fullname}</Label></li>
+                  </ul>
+                  
+                  
+                  <Button className="flex justify-center">Confirm Deletion</Button>
+                </>
+              )
+            })
+          }
+        </div>
+      </Modal>
+
+    </>
   );
 }
