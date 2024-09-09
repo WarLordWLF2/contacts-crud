@@ -14,8 +14,8 @@ pnpm dev
 bun dev
 ```
 IMPORTANT!!!
-The file "contact" is a php file so if you want to use this program delete or if you want to use it you can move it into the xampp file 
-something thats it!
+The file "contact" is a php file so if you want to use this program you can delete it or if you want to use it you can move it into the xampp file 
+or something thats it!
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
